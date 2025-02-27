@@ -345,9 +345,48 @@ export namespace EntryPoints {
    */
   type filter<T> = (options: Filter.options<T>) => boolean;
 
-  type transform = undefined;
+  namespace Transform {
+    interface options<T> {
+      /** A record that was exported. */
+      record: T;
+      /** All custom settings in scope. */
+      settings: Record<string, unknown>;
+      /** A flag indicating test mode and preview. */
+      testMode: boolean;
+      /** The job currently runing */
+      job: Job;
+    }
+  }
 
-  type branching = undefined;
+  /**
+   * Transformations allow you to change your source data before it is processed by a flow.\
+   * You can simplify and modify the data so it's easier for your import to understand
+   *
+   * The function needs to return the transformed record.
+   *
+   * Throwing an exception will return an error for the record.
+   */
+  type transform<T, K> = (options: Transform.options<T>) => K;
+
+  namespace Branching {
+    interface options<T> {
+      /** A record that was exported. */
+      record: T;
+      /** All custom settings in scope. */
+      settings: Record<string, unknown>;
+      /** A flag indicating test mode and preview. */
+      testMode: boolean;
+    }
+  }
+
+  /**
+   * Branching allows you to choose different paths for your data in the flow.
+   *
+   * The function needs to return an array of integers representing the branch indices that should process the record.
+   *
+   * Throwing an exception will return an error for the record.
+   */
+  type branching<T> = (options: Branching.options<T>) => number[];
 
   type contentBasedFlowRouter = undefined
 
