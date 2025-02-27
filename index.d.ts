@@ -22,7 +22,7 @@ interface ImportResponse<T> {
   statusCode: number;
   /** An array of errors that happened during the import. */
   errors: ImportError[]
-  /** Whether the records was skipped/filtered or not. */
+  /** Whether the record was skipped/filtered. */
   ignored: boolean;
   /** The id from the import application response. */
   id: string;
@@ -182,7 +182,6 @@ export namespace EntryPoints {
       /** Used to report one or more errors for the specific record */
       errors?: Error;
     }
-
   }
 
   /**
@@ -260,11 +259,91 @@ export namespace EntryPoints {
    *
    * Throwing an exception will signal a fatal error and fail the entire page of records.
   */
-  type postResponseMap<T, R, K> = (o: PostResponseMap.options<T, R>) => PostResponseMap.response<K>;
+  type postResponseMap<T, R, K> = (options: PostResponseMap.options<T, R>) => PostResponseMap.response<K>;
 
-  type postAggregate = undefined;
+  namespace PostAggregate {
+    type Aggregation<T> = {
+      /** Whether the aggregation was successful. */
+      success: boolean;
+      /** Information about the aggregated data transfer. */
+      _json: T;
+      /** Error code for a failed aggregate. */
+      code: string;
+      /** Error message for a failed aggregate. */
+      message: string;
+      /** Error source for a failed aggregate. */
+      source: string;
+    }
 
-  type filter = undefined;
+
+    interface options<T> extends ImportOptions {
+      /** A container object containing the information about an aggregate. */
+      postAggregateData: Aggregation<T>;
+    }
+  }
+
+  /**
+   * The post aggregate hook is invoked after the final aggregated file is uploaded to the destination service.
+   *
+   * This hook is used to get information about the final file that was aggregated and uploaded to the external destination.
+   * This hook will not execute when the skip aggregation field is set to true.
+   *
+   * Throwing an exception will signal a fatal error.
+   */
+  type postAggregate<T> = (options: PostAggregate.options<T>) => void
+
+
+
+  /*
+  * filterFunction stub:
+  *
+  * The name of the function can be changed to anything you like.
+  *
+  * The function will be passed one 'options' argument that has the following fields:
+  *   'record' - object {} or array [] depending on the data source.
+  *   'pageIndex' - 0 based. context is the batch export currently running.
+  *   'lastExportDateTime' - delta exports only.
+  *   'currentExportDateTime' - delta exports only.
+  *   'settings' - all custom settings in scope for the filter currently running.
+  *   'testMode' - boolean flag indicating test mode and previews.
+  *   'job' - the job currently running.
+  *
+  */
+
+  namespace Filter {
+    type options<T> = standardOptions<T> | deltaOptions<T>;
+
+    interface standardOptions<T> {
+      /** A record that was imported/exported. */
+      record: T;
+      /** Page of the batch export this record belongs to. */
+      pageIndex: number;
+      /** All custom settings in scope. */
+      settings: Record<string, unknown>;
+      /** A flag indicating test mode and preview. */
+      testMode: boolean;
+      /** The job currently runing */
+      job: Job;
+    }
+
+    interface deltaOptions<T> extends standardOptions<T> {
+      /** The last time the export was executed. */
+      lastExportDateTime: string;
+      /** The time of the export currently running. */
+      currentExportDateTime: string;
+    }
+  }
+
+  /**
+   * The filter hook is invoked before or after an import/export has run.
+   *
+   * This hook is a great place to filter out records that you do not want to process.
+   *
+   * The function needs to return true or false.  i.e. true indicates the record should be processed.
+   *
+   * Throwing an exception will return an error for the record.
+   */
+  type filter<T> = (options: Filter.options<T>) => boolean;
 
   type transform = undefined;
 
