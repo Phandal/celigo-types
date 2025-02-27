@@ -2,7 +2,11 @@
   "name": "celigo-types",
   "version": "1.0.0",
   "description": "Types for celigo-hooks",
-  "author": "",
+  "author": "Bailey Feldewerd <bfeld.111@gmail.com>",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Phandal/celigo-types.git"
+  },
   "types": "./index.d.ts"
 }
