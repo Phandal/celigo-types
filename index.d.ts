@@ -388,9 +388,100 @@ export namespace EntryPoints {
    */
   type branching<T> = (options: Branching.options<T>) => number[];
 
-  type contentBasedFlowRouter = undefined
+  namespace ContentBasedFlowRouter {
+    interface options {
+      /** A JSON object containing the http headers received in the request from the trading partner. */
+      httpHeaders: Record<string, string>;
+      /** A JSON object containing the mime headers from the mime part containing EDI message. */
+      mimeHeaders: Record<string, string>;
+      /** A string containing unencrypted edi/xml content. */
+      rawMessageBody: string;
+    }
 
-  type formInit = undefined;
+    interface response {
+      /** The flow id that should be run. */
+      _flowId: string;
+      /** The export id that should be run. */
+      _exportId: string;
+    }
+  }
 
-  type handleRequest = undefined;
+  /**
+   * The Content Based Flow Router is a way to route data to different exports/flows based on the content.
+   *
+   * The function needs to return an object specifying which flow & export to run.
+   *
+   * To signal a failure throw an exception.
+   */
+  type contentBasedFlowRouter = (options: ContentBasedFlowRouter.options) => ContentBasedFlowRouter.response;
+
+  namespace FormInit {
+    type options = standardOptions | integrationOptions;
+
+    interface standardOptions {
+      /** The resource being viewed in the UI. */
+      resource: string;
+      /** The parent of the resource being view in the UI. */
+      parentResource: string;
+      /** The grandparent of the resource being viewed in the UI. */
+      grandparentResource: string;
+      /** A flag indicating whether the script is invoked for sandbox. */
+      sandbox: boolean;
+    }
+
+    interface integrationOptions extends standardOptions {
+      /** The license provisioned to the integration. */
+      license: string
+      /** The parent of the licesnse provisioned to the integration. */
+      parentLicense: string;
+      /** The grandparent of the license provisioned to the integration. */
+      grandparentLicense: string;
+    }
+  }
+
+  /**
+   *  The Form Init script is a way to design a custom form in code.
+   *
+   *  The function needs to return a form object for the UI to render.
+   *
+   *  Throwing an exception will signal an error.
+   */
+  type formInit = (options: FormInit.options) => Record<string, string>;
+
+  namespace HandleRequest {
+
+    type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+
+    interface options {
+      /** The request method. */
+      method: Method;
+      /** The headers on the request. */
+      headers: Record<string, string>
+      /** The query string from the request. */
+      queryString: Record<string, unknown>
+      /** An object if the body is parseable, otherwise undefined. */
+      body?: Record<string, unknown>
+      /** The raw request body. */
+      rawBody: string;
+      /** A flag indicating whether the script is invoked for sandbox. */
+      sandbox: boolean;
+    }
+
+    interface response {
+      /** The status code of the response. */
+      statusCode: number;
+      /** The response header overrides. */
+      headers?: Record<string, string>;
+      /** The response body. */
+      body: string | Record<string, unknown>;
+    }
+  }
+
+  /**
+   * The Handle Request script is a way to handle requests that come in.
+   *
+   * Throwing an exception will signal an error.
+   */
+  type handleRequest = (options: HandleRequest.options) => HandleRequest.response;
 }
+
