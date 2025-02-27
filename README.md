@@ -14,7 +14,7 @@ import { EntryPoints } from 'celig-types';
 ```typescript
 import { EntryPoints } from 'celig-types';
 
-const preMap: EntryPoints.preMap<unknown, unknown> = (o: EntryPoints.PreMap.options): EntryPoints.PreMap.response => {
+const preMap: EntryPoints.preMap<Record, ReturnRecord> = (o: EntryPoints.PreMap.options<Record>): EntryPoints.PreMap.response<ReturnRecord> => {
     return o.data.map((record) => {
         return { data: record };
     });
