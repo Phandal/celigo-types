@@ -7,12 +7,12 @@ npn install -D celigo-types
 
 ## Usage
 ```typescript
-import { EntryPoints } from 'celig-types';
+import { EntryPoints } from 'celigo-types';
 ```
 
 ## PreMap Example
 ```typescript
-import { EntryPoints } from 'celig-types';
+import { EntryPoints } from 'celigo-types';
 
 const preMap: EntryPoints.preMap<Record, ReturnRecord> = (o: EntryPoints.PreMap.options<Record>): EntryPoints.PreMap.response<ReturnRecord> => {
     return o.data.map((record) => {
