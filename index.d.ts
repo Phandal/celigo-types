@@ -119,7 +119,7 @@ export namespace EntryPoints {
       /** Instruct the batch export to stop generating new pages of data */
       abort: boolean;
       /** New Errors linked to retry data. */
-      newErrorsAndRetryData: [{ retryData: T, errors: error[] }];
+      newErrorsAndRetryData: { retryData: T, errors: error[] }[];
     }
   }
 
